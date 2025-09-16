@@ -1,0 +1,127 @@
+# === ENVIRONMENT & SECRETS ===
+# Environment variables (NEVER commit API keys!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === NODE.JS ===
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# === FRONTEND (VITE/REACT) ===
+# Vite build output
+frontend/dist/
+frontend/build/
+
+# Vite cache
+frontend/.vite/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# === BACKEND ===
+# Compiled TypeScript
+backend/dist/
+backend/build/
+
+# TypeScript cache
+backend/*.tsbuildinfo
+
+# === DATABASE ===
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Database dumps
+*.sql
+
+# === CACHING & TEMPORARY FILES ===
+# Redis dump files
+dump.rdb
+
+# Temporary folders
+tmp/
+temp/
+
+# === LOGS ===
+logs/
+*.log
+
+# === OPERATING SYSTEM ===
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# === DEVELOPMENT TOOLS ===
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettier-cache
+
+# Jest coverage
+coverage/
+
+# === SCRAPING & DATA ===
+# Scraped data cache files (if you save to disk)
+cache/
+scraped-data/
+*.json.bak
+
+# === DEPLOYMENT ===
+# Railway
+.railway/
+
+# Docker
+.dockerignore
+Dockerfile.local
+
+# === MISC ===
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Editor backup files
+*.bak
+*.swp
+*.swo
+
+# === PROJECT-SPECIFIC ===
+# Trail data exports (if you save test data)
+trail-exports/
+test-data/
+
+# Screenshots for README
+screenshots/
