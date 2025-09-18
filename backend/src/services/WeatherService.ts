@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { WeatherObservation, WeatherStation } from '../types/weather';
+import type { WeatherObservation } from '../types/weather';
 import NodeCache from 'node-cache';
 
 export class WeatherService {
@@ -62,27 +62,6 @@ export class WeatherService {
     }
   }
 
-  async getNearbyStations(lat: number, lon: number): Promise<WeatherStation[]> {
-    try {
-      const response = await axios.get(
-        `${this.baseUrl}/points/${lat},${lon}/stations`,
-        {
-          headers: { 'User-Agent': this.userAgent },
-        }
-      );
-
-      return response.data.features.map((station: any) => ({
-        id: station.properties.stationIdentifier,
-        name: station.properties.name,
-        lat: station.geometry.coordinates[1],
-        lon: station.geometry.coordinates[0],
-      }));
-    } catch (error) {
-      console.error('Error fetching weather stations:', error);
-      return [];
-    }
-  }
-
   async getAustinAreaWeather(): Promise<WeatherObservation[]> {
     const observations = await Promise.allSettled(
       this.austinStations.map((station) => this.getCurrentConditions(station))
@@ -104,37 +83,5 @@ export class WeatherService {
       .map(
         (result) => (result as PromiseFulfilledResult<WeatherObservation>).value
       );
-  }
-
-  async getAverageConditions(): Promise<WeatherObservation | null> {
-    const observations = await this.getAustinAreaWeather();
-    if (observations.length === 0) return null;
-
-    const avgTemp =
-      observations.reduce((sum, obs) => sum + obs.temperature, 0) /
-      observations.length;
-    const totalRain = observations.reduce(
-      (sum, obs) => sum + obs.precipitation,
-      0
-    );
-
-    return {
-      temperature: avgTemp,
-      humidity: observations[0]?.humidity || 0, // Use first valid reading
-      windSpeed: observations[0]?.windSpeed || 0,
-      precipitation: totalRain,
-      conditions: observations[0]?.conditions || 'Unknown',
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  async _getWeatherForTrail(
-    lat: number,
-    lon: number
-  ): Promise<WeatherObservation | null> {
-    const stations = await this.getNearbyStations(lat, lon);
-    if (stations.length === 0) return this.getAverageConditions();
-
-    return this.getCurrentConditions(stations[0]?.id || '');
   }
 }
