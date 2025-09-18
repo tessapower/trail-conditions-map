@@ -1,10 +1,12 @@
 import axios from 'axios';
 import type { WeatherObservation, WeatherStation } from '../types/weather';
+import NodeCache from 'node-cache';
 
 export class WeatherService {
   private readonly baseUrl = 'https://api.weather.gov';
   private readonly userAgent =
     'TrailConditionsApp/1.0 (trail-conditions@example.com)';
+  private readonly cache = new NodeCache({ stdTTL: 1800 }); // 30 mins
 
   private readonly austinStations = [
     'KAUS', // Austin-Bergstrom
@@ -14,6 +16,27 @@ export class WeatherService {
   ];
 
   async getCurrentConditions(
+    stationId: string
+  ): Promise<WeatherObservation | null> {
+    const cacheKey = `weather_${stationId}`;
+    const cached = this.cache.get<WeatherObservation>(cacheKey);
+
+    if (cached) {
+      console.log(`Cache hit for ${stationId}`);
+      return cached;
+    }
+
+    const result = await this.fetchFromAPI(stationId);
+
+    if (result) {
+      this.cache.set(cacheKey, result);
+      console.log(`Cache set for ${stationId}`);
+    }
+
+    return result;
+  }
+
+  private async fetchFromAPI(
     stationId: string
   ): Promise<WeatherObservation | null> {
     try {
