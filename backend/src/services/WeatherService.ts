@@ -6,7 +6,10 @@ export class WeatherService {
   private readonly baseUrl = 'https://api.weather.gov';
   private readonly userAgent =
     'TrailConditionsApp/1.0 (trail-conditions@example.com)';
-  private readonly cache = new NodeCache({ stdTTL: 1800 }); // 30 mins
+  private readonly cache =
+    process.env.NODE_ENV === 'development'
+      ? new NodeCache({ stdTTL: 1800 }) // 30 mins
+      : null;
 
   private readonly austinStations = [
     'KAUS', // Austin-Bergstrom
@@ -18,18 +21,20 @@ export class WeatherService {
   async getCurrentConditions(
     stationId: string
   ): Promise<WeatherObservation | null> {
-    const cacheKey = `weather_${stationId}`;
-    const cached = this.cache.get<WeatherObservation>(cacheKey);
+    if (this.cache) {
+      const cacheKey = `weather_${stationId}`;
+      const cached = this.cache.get<WeatherObservation>(cacheKey);
 
-    if (cached) {
-      console.log(`Cache hit for ${stationId}`);
-      return cached;
+      if (cached) {
+        console.log(`Cache hit for ${stationId}`);
+        return cached;
+      }
     }
 
     const result = await this.fetchFromAPI(stationId);
 
-    if (result) {
-      this.cache.set(cacheKey, result);
+    if (result && this.cache) {
+      this.cache.set(`weather_${stationId}`, result);
       console.log(`Cache set for ${stationId}`);
     }
 
